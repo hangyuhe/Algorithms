@@ -1,0 +1,62 @@
+import random
+from matplotlib import pyplot as plt
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+
+
+def draw(computed):
+    x = []
+    y = []
+    z = []
+    for cp in computed:
+        x.append(cp[0])
+        y.append(cp[1])
+        z.append(cp[2])
+
+    fig = plt.figure()
+    # ax = Axes3D(fig)
+
+    ax = fig.gca(projection='3d')
+    ax.plot_trisurf(x, y, z, cmap='rainbow', linewidth=0.1, alpha=0.8)
+    ax.dist = 12
+    ax.view_init(30, -45)  # 设置初始视角角度.
+    ax.set_xlim(-1.0, 1.0)  # x 轴坐标范围.
+    ax.set_ylim(-1.0, 1.0)  # y 轴坐标范围.
+    ax.set_zlim(0.0, 1.0)  # z 轴坐标范围.
+    plt.gca().invert_xaxis()  # 颠倒坐标轴.
+
+    plt.savefig('Alpha', dpi=1024)
+    plt.show()
+
+
+def main():
+    # 随机生成样本数据
+    N = 100
+    sample_data = []
+    for i in range(N):
+        generated_data = [random.uniform(-1, 1), random.uniform(-1, 1)]
+        if generated_data not in sample_data:  # 去掉重复数据
+            sample_data.append(generated_data)
+
+    k = 20  # 参数Kn
+
+    x = -1.0
+    step = 0.02
+    computed = []
+    while x <= 1.0:
+        y = -1.0
+        while y <= 1.0:
+            dist = []
+            for sample in sample_data:
+                distance = (x - sample[0]) ** 2 + (y - sample[1]) ** 2
+                dist.append(distance)
+            dist.sort()
+            computed.append([x, y, k / N / (3.14 * dist[k-1])])
+            y += step
+        x += step
+
+    draw(computed)
+
+
+if __name__ == '__main__':
+    main()
